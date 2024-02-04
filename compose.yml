@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  yfinance:
+    image: vkmguy/yahoo-finance-api
+    hostname: yfinance
+    container_name: yfinance
+    build:
+      context: .
+    command: bash -c "python manage.py migrate && gunicorn yahoo_finance_api.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_SETTINGS_MODULE: yahoo_finance_api.settings
+    networks:
+      - docker-configurations_pg_net
+      - docker-configurations_kafka_net
+
+networks:
+  docker-configurations_kafka_net:
+    external: true
+  docker-configurations_pg_net:
+    external: true
